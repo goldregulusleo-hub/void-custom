@@ -43,6 +43,7 @@ val quests = setOf(
     "zogre_flesh_eaters",
     // mini-quests
     "enter_the_abyss",
+    "sheep_shearer_miniquest",
 )
 
 fun Player.quest(name: String): String = this[name, "unstarted"]
