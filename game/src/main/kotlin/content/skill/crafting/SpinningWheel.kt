@@ -70,6 +70,10 @@ class SpinningWheel : Script {
         }
 
         itemOnObjectOperate(obj = "spinning_wheel*", arrive = false) { (target, item) ->
+            if (item.id == "black_wool" && quest("sheep_shearer_miniquest") != "started") {
+                message("You can only spin black wool while helping Fred the Farmer.")
+                return@itemOnObjectOperate
+            }
             val rows = Tables.get("spinning").rows()
             val row = rows.firstOrNull { it.rowId == item.id } ?: return@itemOnObjectOperate
             val product = row.item("product")

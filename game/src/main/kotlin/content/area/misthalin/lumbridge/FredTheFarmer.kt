@@ -1,5 +1,6 @@
 package content.area.misthalin.lumbridge
 
+import content.entity.player.bank.Bank
 import content.entity.player.bank.bank
 import content.entity.player.dialogue.Amazed
 import content.entity.player.dialogue.Angry
@@ -19,8 +20,10 @@ import content.entity.player.dialogue.type.npc
 import content.entity.player.dialogue.type.player
 import content.entity.player.dialogue.type.statement
 import content.quest.quest
+import content.quest.refreshQuestJournal
 import world.gregs.voidps.engine.Script
 import world.gregs.voidps.engine.client.message
+import world.gregs.voidps.engine.client.ui.dialogue.talkWith
 import world.gregs.voidps.engine.entity.character.player.Player
 import world.gregs.voidps.engine.entity.character.player.name
 import world.gregs.voidps.engine.entity.character.player.skill.Skill
@@ -28,6 +31,7 @@ import world.gregs.voidps.engine.entity.character.player.skill.exp.exp
 import world.gregs.voidps.engine.inv.add
 import world.gregs.voidps.engine.inv.inventory
 import world.gregs.voidps.engine.inv.removeToLimit
+import world.gregs.voidps.engine.inv.transact.operation.ClearItem.clear
 import world.gregs.voidps.engine.inv.transact.operation.RemoveItemLimit.removeToLimit
 import world.gregs.voidps.engine.inv.transact.operation.ShiftItem.shiftToFreeIndex
 
@@ -50,23 +54,26 @@ class FredTheFarmer : Script {
                 else -> fullyCompleted()
             }
         }
-        itemOnNPCOperate("ball_of_black_wool", "fred_the_farmer_lumbridge") {
+        itemOnNPCOperate("ball_of_black_wool", "fred_the_farmer_lumbridge") { (target) ->
             when (quest("sheep_shearer_miniquest")) {
                 "started" -> {
                     if (giveBlackBallsOfWool > 0) {
+                        talkWith(target)
                         giveBlackWool()
                     }
                 }
             }
         }
-        itemOnNPCOperate("black_wool", "fred_the_farmer_lumbridge") {
+        itemOnNPCOperate("black_wool", "fred_the_farmer_lumbridge") { (target) ->
             if (quest("sheep_shearer_miniquest") == "started") {
+                talkWith(target)
                 player<Idle>("I've got some wool. I've not managed to make it into a ball, though.")
                 npc<Idle>("Well, go find a spinning wheel then. You can find one on the first floor of Lumbridge Castle; just turn right and follow the path when leaving my house and you'll find Lumbridge.")
             }
         }
-        itemOnNPCOperate("wool", "fred_the_farmer_lumbridge") {
+        itemOnNPCOperate("wool", "fred_the_farmer_lumbridge") { (target) ->
             if (quest("sheep_shearer_miniquest") == "started") {
+                talkWith(target)
                 npc<Idle>("That wool is white, I'm dealing with a guy looking to do business with black wool only.")
             }
         }
@@ -161,6 +168,7 @@ class FredTheFarmer : Script {
     suspend fun Player.takeJob() {
         set("sheep_shearer_miniquest", "started")
         giveBlackBallsOfWool = 20
+        refreshQuestJournal()
         npc<Idle>("Good. Hopefully, you'll be safe from 'The Thing'! Do you actually know how to shear a sheep?")
         choice {
             alreadyKnowShearing()
@@ -273,16 +281,21 @@ class FredTheFarmer : Script {
     }
 
     suspend fun Player.giveBlackWool() {
-        val give = inventory.removeToLimit("ball_of_black_wool", giveBlackBallsOfWool)
-        giveBlackBallsOfWool -= give
-        if (giveBlackBallsOfWool <= 0) {
-            giveBlackBallsOfWool = 0
+        val remaining = giveBlackBallsOfWool.coerceAtLeast(0)
+        if (remaining == 0) {
             allTheWool()
-        } else {
-            player<Idle>("That's all I've got so far.")
-            npc<Idle>("I need $giveBlackBallsOfWool more before I can pay you.")
-            player<Idle>("Okay, I'll work on it.")
+            return
         }
+        val given = inventory.removeToLimit("ball_of_black_wool", remaining)
+        giveBlackBallsOfWool = (remaining - given).coerceAtLeast(0)
+        refreshQuestJournal()
+        if (giveBlackBallsOfWool == 0) {
+            allTheWool()
+            return
+        }
+        player<Idle>("That's all I've got so far.")
+        npc<Idle>("I need $giveBlackBallsOfWool more before I can pay you.")
+        player<Idle>("Okay, I'll work on it.")
     }
 
     suspend fun Player.allTheWool() {
@@ -291,12 +304,16 @@ class FredTheFarmer : Script {
         npc<Angry>("But that's the white ones only, mind you!")
         npc<Disheartened>("Anyway, I guess I'd better pay you.")
         item("coins1000_2", "Fred gives you some money and teaches you some Crafting techniques.")
+        if (!inventory.add("coins", 2000)) {
+            message("Inventory full. To make more room, sell, drop or bank something.")
+            return
+        }
         set("sheep_shearer_miniquest", "completed")
         exp(Skill.Crafting, 150.0)
-        inventory.add("coins", 2000)
         inventory.removeToLimit("black_wool", Int.MAX_VALUE)
         inventory.removeToLimit("ball_of_black_wool", Int.MAX_VALUE)
-        bankCleanUp()
+        cleanUpSheepShearerBank()
+        refreshQuestJournal()
     }
 
     suspend fun Player.secondReward() {
@@ -305,6 +322,7 @@ class FredTheFarmer : Script {
         statement("The farmer hands over 1,940 coins.")
         if (inventory.add("coins", 1940)) {
             set("sheep_shearer_miniquest", "completed_with_second_reward")
+            refreshQuestJournal()
             player<Happy>("Thank you!")
         } else {
             player<Idle>("Great news, but I need to free up some inventory space first. I'll be right back.")
@@ -327,17 +345,21 @@ class FredTheFarmer : Script {
             }
         }
     }
+}
 
-    fun Player.bankCleanUp() {
-        bank.transaction {
-            val index = inventory.indexOf("black_wool")
-            removeToLimit("black_wool", Int.MAX_VALUE)
+fun Player.cleanUpSheepShearerBank() {
+    val questItems = setOf("black_wool", "ball_of_black_wool")
+    for (index in bank.indices.reversed()) {
+        if (bank[index].id !in questItems) {
+            continue
+        }
+        val tab = Bank.getTab(this, index)
+        val success = bank.transaction {
+            clear(index)
             shiftToFreeIndex(index)
         }
-        bank.transaction {
-            val index = inventory.indexOf("ball_of_black_wool")
-            removeToLimit("ball_of_black_wool", Int.MAX_VALUE)
-            shiftToFreeIndex(index)
+        if (success) {
+            Bank.decreaseTab(this, tab)
         }
     }
 }
