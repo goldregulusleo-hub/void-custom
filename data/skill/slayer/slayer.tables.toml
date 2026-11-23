@@ -124,6 +124,9 @@ quest = "what_lies_below"
 npc = "dagannoth_lighthouse_range_74"
 quest = "horror_from_the_deep"
 
+[.desert_strykewyrm]
+npc = "mound_desert_strykewyrm"
+
 [.dark_warriors]
 npc = "dark_warrior"
 
@@ -202,6 +205,9 @@ npc = "infernal_mage"
 [.ice_giants]
 npc = "ice_giant"
 
+[.ice_strykewyrm]
+npc = "mound_ice_strykewyrm"
+
 [.ice_warriors]
 npc = "ice_warrior"
 combat_level = 45
@@ -240,6 +246,9 @@ npc = "lesser_demon"
 [.lizards]
 npc = "lizard"
 combat_level = 20
+
+[.living_rock_creatures]
+npc = "living_rock_protector"
 
 [.magic_axe]
 npc = "magic_axe"

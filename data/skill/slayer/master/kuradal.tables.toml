@@ -168,6 +168,6 @@ amount = [170, 250]
 weight = 9
 tip = "Waterfiends are creatures of water that live just north of us. Those followed by familiars are keen to slay these elemental forces."
 
-[.warped_creatures]
-amount = [150, 240]
-tip = "Warped tortoises are creatures tainted by magical waste. They are vulnerable to an elven chime. I know you have seen them in your adventures, so go crack some carapace."
+#[.warped_creatures]
+#amount = [150, 240]
+#tip = "Warped tortoises are creatures tainted by magical waste. They are vulnerable to an elven chime. I know you have seen them in your adventures, so go crack some carapace."

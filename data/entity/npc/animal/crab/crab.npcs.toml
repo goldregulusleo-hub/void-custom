@@ -10,6 +10,7 @@ categories = ["crabs"]
 combat_def = "rock_crab"
 examine = "No one likes crabs..."
 hitpoints = 500
+slayer_xp = 50.0
 max_hit_crush = 10
 
 [rock_crab_1]
@@ -45,6 +46,7 @@ att = 50
 str = 80
 def = 200
 hitpoints = 1800
+slayer_xp = 198.0
 combat_def = "rock_crab"
 max_hit_crush = 90
 respawn_delay = 50

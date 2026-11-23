@@ -1,11 +1,13 @@
 package content.skill.slayer
 
 import content.quest.questCompleted
+import world.gregs.voidps.engine.client.variable.MapValues
 import world.gregs.voidps.engine.data.config.TableDefinition
 import world.gregs.voidps.engine.data.definition.ColumnType
 import world.gregs.voidps.engine.data.definition.NPCDefinitions
 import world.gregs.voidps.engine.data.definition.Rows
 import world.gregs.voidps.engine.data.definition.Tables
+import world.gregs.voidps.engine.data.definition.VariableDefinitions
 import world.gregs.voidps.engine.entity.character.Character
 import world.gregs.voidps.engine.entity.character.npc.NPC
 import world.gregs.voidps.engine.entity.character.player.Player
@@ -113,6 +115,12 @@ private fun rollTask(player: Player, master: String): Pair<String, Int>? {
 
 private fun hasRequirements(player: Player, table: TableDefinition, row: Int): Boolean {
     val category = Rows.get(row).rowId
+    // The revision 634 client can only persist and display categories present in slayer_target.
+    // Keep unsupported master rows as historical data, but never select them for a new task.
+    val targets = (VariableDefinitions.get("slayer_target")?.values as? MapValues)?.values ?: return false
+    if (!targets.containsKey(category)) {
+        return false
+    }
     // A master listing a task with no matching slayer_tasks entry shouldn't crash the whole
     // assignment - skip it so the other tasks can still be rolled.
     val npc = Tables.intOrNull("slayer_tasks.$category.npc") ?: return false
