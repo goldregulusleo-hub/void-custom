@@ -42,14 +42,18 @@ class Experience(
         Skills.exp(player, skill, previous, experience)
     }
 
-    fun add(skill: Skill, experience: Double) {
+    fun add(skill: Skill, experience: Double) = add(skill, experience, XpOrigin.UNKNOWN)
+
+    fun add(skill: Skill, experience: Double, origin: XpOrigin) {
         if (experience <= 0.0) {
             return
         }
-        val actual = experience * 10 * multiplier * Settings["world.experienceRate", DEFAULT_EXPERIENCE_RATE]
         if (blocked.contains(skill)) {
+            val actual = experience * 10 * multiplier * Settings["world.experienceRate", DEFAULT_EXPERIENCE_RATE]
             Skills.blocked(player, skill, actual.toInt())
         } else {
+            val base = if (origin == XpOrigin.UNKNOWN) experience else ExperienceModifiers.modify(player, skill, origin, experience)
+            val actual = base * 10 * multiplier * Settings["world.experienceRate", DEFAULT_EXPERIENCE_RATE]
             val current = direct(skill)
             AuditLog.event(player, "exp", skill, experience)
             set(skill, current + actual.toInt())
@@ -87,3 +91,5 @@ class Experience(
 }
 
 fun Player.exp(skill: Skill, experience: Double) = this.experience.add(skill, experience)
+
+fun Player.exp(skill: Skill, experience: Double, origin: XpOrigin) = this.experience.add(skill, experience, origin)
