@@ -5,6 +5,7 @@ examine = "A big powerful dragon."
 drop_table = "red_dragon"
 combat_def = "red_dragon"
 hitpoints = 1400
+slayer_xp = 143.4
 att = 130
 str = 130
 def = 130

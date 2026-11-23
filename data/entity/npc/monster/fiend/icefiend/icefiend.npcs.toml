@@ -27,6 +27,7 @@ drop_table = "icefiend"
 categories = ["icefiends"]
 examine = "A robust ice demon."
 hitpoints = 150
+slayer_xp = 15.0
 att = 10
 str = 10
 def = 12

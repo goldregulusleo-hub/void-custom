@@ -47,6 +47,7 @@ clone = "greater_demon"
 [lesser_demon]
 id = 82
 hitpoints = 790
+slayer_xp = 79.0
 att = 68
 str = 70
 def = 71

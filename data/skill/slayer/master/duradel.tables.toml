@@ -68,10 +68,10 @@ amount = [130, 200]
 weight = 10
 tip = "Gargoyles are winged creatures of stone. You'll need to fight them until they are close to death before breaking them apart with a rock hammer. Exterminate those in the Slayer Tower."
 
-[.gorak]
-amount = [40, 80]
-weight = 5
-tip = "Goraks are extremely aggressive creatures. They have been imprisoned on an alternate plane, which is only accessible by using the fairy rings. Be extremely careful: their touch drains life points as well as skills!"
+#[.gorak]
+#amount = [40, 80]
+#weight = 5
+#tip = "Goraks are extremely aggressive creatures. They have been imprisoned on an alternate plane, which is only accessible by using the fairy rings. Be extremely careful: their touch drains life points as well as skills!"
 
 [.greater_demons]
 amount = [130, 200]

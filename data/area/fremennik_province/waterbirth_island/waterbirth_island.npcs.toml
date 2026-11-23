@@ -51,6 +51,7 @@ categories = ["dagannoth"]
 examine = "The Dagannoth Mother's guardians."
 drop_table = "dagannoth_guardian"
 hitpoints = 2100
+slayer_xp = 210.0
 att = 1
 str = 1
 def = 187
