@@ -59,6 +59,13 @@ class SettingsTest {
     }
 
     @Test
+    fun `List setting names`() {
+        settings.load(example)
+
+        assertEquals(setOf("server.name", "network.port", "world.experienceRate", "server.live"), settings.names())
+    }
+
+    @Test
     fun `Cached settings refresh when settings change`() {
         val live = settings.bool("server.live", false)
         val port = settings.int("network.port", -1)

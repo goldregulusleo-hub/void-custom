@@ -34,6 +34,8 @@ open class Settings {
 
     fun getOrNull(name: String): String? = properties.getProperty(name)
 
+    fun names(): Set<String> = properties.stringPropertyNames()
+
     operator fun get(name: String): String = properties.getProperty(name)
 
     operator fun get(name: String, default: String): String = properties.getProperty(name, default)
