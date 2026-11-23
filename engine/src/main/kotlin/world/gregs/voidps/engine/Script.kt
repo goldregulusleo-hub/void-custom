@@ -19,6 +19,7 @@ import world.gregs.voidps.engine.entity.character.mode.move.Moved
 import world.gregs.voidps.engine.entity.character.npc.hunt.Hunt
 import world.gregs.voidps.engine.entity.character.player.Teleport
 import world.gregs.voidps.engine.entity.character.player.skill.Skills
+import world.gregs.voidps.engine.entity.character.player.skill.exp.ExperienceModifiers
 import world.gregs.voidps.engine.inv.InventoryApi
 import world.gregs.voidps.engine.inv.Items
 import world.gregs.voidps.engine.timer.TimerApi
@@ -89,6 +90,7 @@ interface Script :
             CombatApi,
             CombatMovement,
             DefaultMode,
+            ExperienceModifiers,
         )
 
         fun clear() {
