@@ -4,7 +4,7 @@ option = "Climb-up"
 tile = { x = 3005, y = 10363 }
 delta = { y = -6400 }
 
-[9472]
+[fai_trapdoor]
 option = "Climb-down"
 tile = { x = 3008, y = 3150 }
 delta = { y = 6400 }
@@ -180,7 +180,7 @@ option = "Cross"
 tile = { x = 3047, y = 3206, level = 1 }
 to = { x = 3047, y = 3204 }
 
-[port_sarim_void_outpost_gangplank_enter]
+[port_sarim_lady_lumbridge_gangplank_enter]
 option = "Cross"
 tile = { x = 3047, y = 3205 }
 to = { x = 3047, y = 3207, level = 1 }

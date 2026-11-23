@@ -21,7 +21,7 @@ target_sound = "dagannoth_attack"
 projectile = "water_surge"
 target_hit = { offense = "magic", max = 500 }
 impact_gfx = "water_surge_impact"
-impact_sound = "water_surge_impact"
+impact_sound = "water_wave_impact"
 
 [dagannoth_rex]
 clone = "dagannoth_supreme"
@@ -46,6 +46,7 @@ impact_sound = "water_strike_impact"
 impact_poison = 20
 
 [dagannoth_fledgeling]
+defend_anim = "dagannoth_fledgeling_defend"
 death_anim = "dagannoth_fledgeling_death"
 
 [dagannoth_fledgeling.melee]

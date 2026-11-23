@@ -26,7 +26,7 @@ examine = "Shrine to the glory of Saradomin."
 id = 4859
 examine = "It's a huge statue of some kind of gorilla."
 
-[altar_dessert_treasure]
+[ancient_altar]
 id = 6552
 examine = "A mysterious ancient altar to some forgotten god..."
 
@@ -166,7 +166,7 @@ examine = "An altar to the Big High War God."
 id = 27661
 examine = "Shrine to the glory of Saradomin."
 
-[altar_of_guthix_druidic_ritual]
+[prayer_altar_guthix_druidic_ritual]
 id = 28698
 examine = "An ancient altar to the glory of Guthix."
 
@@ -321,6 +321,10 @@ examine = "A shrine for the faithful to worship at."
 [prayer_altar_zaros]
 id = 55340
 examine = "Shrine to the glory of Zaros."
+
+[prayer_altar_zaros_senntisten]
+id = 47120
+examine = "An ancient altar to the glory of Zaros."
 
 [prayer_altar_warped_construction]
 id = 55667

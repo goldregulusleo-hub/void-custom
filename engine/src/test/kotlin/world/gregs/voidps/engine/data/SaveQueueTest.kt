@@ -48,6 +48,8 @@ internal class SaveQueueTest : KoinMock() {
         override fun saveReport(report: AbuseReport) {
         }
 
+        override fun create(account: PlayerSave): Boolean = false
+
         override fun exists(accountName: String): Boolean = false
 
         override fun load(accountName: String): PlayerSave? = null
@@ -114,6 +116,62 @@ internal class SaveQueueTest : KoinMock() {
         waitFor("attempted account to be dumped") { dumped.contains("attempted") }
         assertFalse(dumped.contains("queued_later"), "Failure dumped an account storage was never asked to write")
         assertTrue(queue.saving("queued_later"), "Failure dropped an account storage was never asked to write")
+    }
+
+    @Test
+    fun `One account storage can't take doesn't hold back the others saved with it`() {
+        val written = CopyOnWriteArrayList<String>()
+        val storage = object : TestStorage() {
+            override fun save(accounts: List<PlayerSave>) {
+                if (accounts.any { it.name == "bad" }) {
+                    throw IllegalArgumentException("Unsupported variable type: LinkedHashMap")
+                }
+                accounts.mapTo(written) { it.name }
+            }
+        }
+        val dumped = CopyOnWriteArrayList<String>()
+        val fallback = object : TestStorage() {
+            override fun save(accounts: List<PlayerSave>) {
+                accounts.mapTo(dumped) { it.name }
+            }
+        }
+        val queue = SaveQueue(storage, fallback, retryMillis = 0)
+        queue.save(Player(accountName = "good"))
+        queue.save(Player(accountName = "bad"))
+        queue.save(Player(accountName = "also_good"))
+        queue.run()
+
+        waitFor("the bad account to be dumped") { dumped.contains("bad") }
+        assertEquals(setOf("good", "also_good"), written.toSet())
+        assertEquals(listOf("bad"), dumped.toList())
+        waitFor("pending to drain") { queue.empty() }
+    }
+
+    @Test
+    fun `Storage failing for every account isn't tried once per account`() {
+        val attempted = AtomicInteger()
+        val storage = object : TestStorage() {
+            override fun save(accounts: List<PlayerSave>) {
+                attempted.incrementAndGet()
+                throw IOException("Connection refused")
+            }
+        }
+        val dumped = CopyOnWriteArrayList<String>()
+        val fallback = object : TestStorage() {
+            override fun save(accounts: List<PlayerSave>) {
+                accounts.mapTo(dumped) { it.name }
+            }
+        }
+        val queue = SaveQueue(storage, fallback, retryMillis = 0)
+        val names = (0 until 10).map { "player_$it" }
+        for (name in names) {
+            queue.save(Player(accountName = name))
+        }
+        queue.run()
+
+        waitFor("every account to be dumped") { dumped.size == names.size }
+        assertEquals(names.toSet(), dumped.toSet())
+        assertEquals(3, attempted.get(), "the batch, then two accounts on their own before giving up on the rest")
     }
 
     @Test
@@ -225,6 +283,25 @@ internal class SaveQueueTest : KoinMock() {
         runBlocking { queue.direct().join() }
 
         assertTrue(written.contains("logged_out_player"), "Shutdown dropped a save left pending by a logout")
+    }
+
+    @Test
+    fun `Pending save can be edited before it's written`() {
+        val written = CopyOnWriteArrayList<PlayerSave>()
+        val storage = object : TestStorage() {
+            override fun save(accounts: List<PlayerSave>) {
+                written.addAll(accounts)
+            }
+        }
+        val queue = SaveQueue(storage)
+        queue.save(Player(accountName = "player", passwordHash = "old"))
+
+        assertEquals("new", queue.edit("player") { it.copy(password = "new") }?.password)
+        assertEquals(null, queue.edit("other") { it.copy(password = "new") })
+
+        queue.run()
+        waitFor("pending to drain") { queue.empty() }
+        assertEquals("new", written.single().password)
     }
 
     private fun waitFor(description: String, condition: () -> Boolean) {
