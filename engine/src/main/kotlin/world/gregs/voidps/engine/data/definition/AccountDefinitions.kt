@@ -49,6 +49,15 @@ class AccountDefinitions(
         displayNames[accountName.lowercase()] = newName
     }
 
+    /**
+     * Removes an account added with [add] which failed to persist
+     */
+    fun remove(accountName: String) {
+        val displayName = displayNames.remove(accountName.lowercase()) ?: return
+        definitions.remove(displayName.lowercase())
+        clans.remove(displayName.lowercase())
+    }
+
     fun clan(displayName: String) = clans[displayName.lowercase()]
 
     fun getByAccount(accountName: String): AccountDefinition? {
@@ -56,6 +65,12 @@ class AccountDefinitions(
     }
 
     fun get(displayName: String) = definitions[displayName.lowercase()]
+
+    /**
+     * Whether [name] is used as a display name or account name by an account other than [except]
+     * Display names can't match other accounts' names so either can identify an account without ambiguity
+     */
+    fun taken(name: String, except: String? = null): Boolean = listOfNotNull(get(name), getByAccount(name)).any { except == null || !it.accountName.equals(except, ignoreCase = true) }
 
     fun getValue(displayName: String) = definitions.getValue(displayName.lowercase())
 

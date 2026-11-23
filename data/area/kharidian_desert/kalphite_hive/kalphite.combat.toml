@@ -26,7 +26,7 @@ impact_poison = 60
 [kalphite_queen]
 defend_anim = "kalphite_queen_defend"
 defend_sound = "kalphite_queen_defend"
-death_anim = "kalphite_death"
+death_anim = "kalphite_queen_death"
 death_sound = "kalphite_queen_death"
 
 [kalphite_queen.melee]
@@ -61,7 +61,7 @@ projectile_origin_x = 2
 projectile_origin_y = 2
 impact_sound = { id = "kalphite_lighting_impact", radius = 10 }
 impact_gfx = "kalphite_queen_lightning_impact"
-target_hit = { offense = "magic", max = 310 }
+target_hit = { offense = "magic", max = 310, special = true }
 
 [kalphite_queen_airborne]
 defend_anim = "kalphite_queen_airborne_defend"

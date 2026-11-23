@@ -2,14 +2,15 @@ package content.quest.member.fairy_tale_part_2.fairy_ring
 
 import content.entity.player.modal.Tab
 import content.entity.player.modal.tab
-import content.quest.quest
 import content.quest.questCompleted
+import content.quest.questStarted
 import content.skill.melee.weapon.weapon
 import world.gregs.voidps.engine.Script
 import world.gregs.voidps.engine.client.message
 import world.gregs.voidps.engine.client.ui.closeMenu
 import world.gregs.voidps.engine.client.ui.open
 import world.gregs.voidps.engine.client.variable.ListValues
+import world.gregs.voidps.engine.data.definition.Rows
 import world.gregs.voidps.engine.data.definition.VariableDefinitions
 import world.gregs.voidps.engine.entity.character.player.Player
 import world.gregs.voidps.engine.entity.character.player.Teleport
@@ -18,7 +19,7 @@ import world.gregs.voidps.engine.suspend.Suspension
 import world.gregs.voidps.engine.suspend.pauseString
 import world.gregs.voidps.type.Tile
 
-class FairyRing(val fairyRing: FairyRingCodes) : Script {
+class FairyRing : Script {
 
     val hub = Tile(2412, 4434)
 
@@ -51,12 +52,12 @@ class FairyRing(val fairyRing: FairyRingCodes) : Script {
             walkOverDelay(target.tile)
             delay()
             this["fairy_rings_unlocked"] = true
-            val destination = fairyRing.codes[code]
-            if (destination == null || destination.tile == Tile.EMPTY || (destination.quest.isNotEmpty() && !questCompleted(destination.quest))) {
+            val destination = Rows.getOrNull("fairy_ring_codes.$code")
+            if (destination == null || destination.tile("tile") == Tile.EMPTY || (destination.string("quest").isNotEmpty() && !questCompleted(destination.string("quest")))) {
                 Teleport.teleport(this, hub.toCuboid(radius = 2).random(this) ?: hub, "fairy_ring")
                 return@objectOperate
             }
-            Teleport.teleport(this, destination.tile, "fairy_ring")
+            Teleport.teleport(this, destination.tile("tile"), "fairy_ring")
             val list: MutableList<String> = getOrPut("travel_log_locations") { mutableListOf() }
             if (!list.contains(code)) {
                 list.add(code)
@@ -88,7 +89,7 @@ class FairyRing(val fairyRing: FairyRingCodes) : Script {
     }
 
     fun Player.canUseFairyRing(): Boolean {
-        if (quest("fairy_tale_ii") == "unstarted") {
+        if (!questStarted("fairy_tale_ii")) {
             message("You don't have permission to use that fairy ring.")
             return false
         }
