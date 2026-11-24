@@ -21,6 +21,7 @@ import world.gregs.voidps.engine.entity.character.mode.interact.PlayerOnObjectIn
 import world.gregs.voidps.engine.entity.character.player.Player
 import world.gregs.voidps.engine.entity.character.player.chat.inventoryFull
 import world.gregs.voidps.engine.entity.character.player.skill.Skill
+import world.gregs.voidps.engine.entity.character.player.skill.exp.XpOrigin
 import world.gregs.voidps.engine.entity.character.player.skill.exp.exp
 import world.gregs.voidps.engine.entity.character.player.skill.level.Level
 import world.gregs.voidps.engine.entity.character.player.skill.level.Level.has
@@ -92,7 +93,7 @@ class Woodcutting(val drops: DropTables) : Script {
             }
             if (success(player.levels.get(Skill.Woodcutting) + player.familiarBoost(Skill.Woodcutting), hatchet, log)) {
                 val xp = log.int("xp") / 10.0
-                player.exp(Skill.Woodcutting, xp)
+                player.exp(Skill.Woodcutting, xp, XpOrigin.TRAINING)
                 tryDropNest(player, ivy)
                 if (!addLog(player, log.rowId) || deplete(player, log, target)) {
                     break
