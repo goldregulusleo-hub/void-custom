@@ -11,6 +11,7 @@ import world.gregs.voidps.engine.entity.character.player.Player
 import world.gregs.voidps.engine.entity.character.player.Players
 import world.gregs.voidps.engine.entity.character.player.combatLevel
 import world.gregs.voidps.engine.entity.character.player.skill.Skill
+import world.gregs.voidps.engine.entity.character.player.skill.exp.XpOrigin
 import world.gregs.voidps.engine.entity.character.player.skill.exp.exp
 import kotlin.math.floor
 
@@ -90,7 +91,7 @@ class CombatExperience : Script {
         if (target is NPC && !target.transformDef["combat_exp", true]) {
             return
         }
-        player.exp(skill, experience * calcBonus(target))
+        player.exp(skill, experience * calcBonus(target), XpOrigin.COMBAT)
     }
 
     fun calcBonus(target: Character): Double = when (target) {

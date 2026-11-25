@@ -29,6 +29,7 @@ import world.gregs.voidps.engine.entity.character.player.Players
 import world.gregs.voidps.engine.entity.character.player.chat.ChatType
 import world.gregs.voidps.engine.entity.character.player.name
 import world.gregs.voidps.engine.entity.character.player.skill.Skill
+import world.gregs.voidps.engine.entity.character.player.skill.exp.XpOrigin
 import world.gregs.voidps.engine.entity.character.player.skill.exp.exp
 import world.gregs.voidps.engine.entity.character.sound
 import world.gregs.voidps.engine.entity.item.Item
@@ -214,7 +215,7 @@ class NPCDeath(
             logger.warn { "No slayer exp found for slain monster: $npc" }
             return
         }
-        player.exp(Skill.Slayer, slayerExp)
+        player.exp(Skill.Slayer, slayerExp, XpOrigin.COMBAT)
         player.slayerTaskRemaining--
         if (player.slayerTaskRemaining == 0) {
             player.slayerStreak++
