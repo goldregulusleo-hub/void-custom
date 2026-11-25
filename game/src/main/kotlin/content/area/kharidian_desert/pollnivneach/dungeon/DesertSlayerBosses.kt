@@ -7,6 +7,7 @@ import world.gregs.voidps.engine.data.definition.Tables
 import world.gregs.voidps.engine.entity.character.move.tele
 import world.gregs.voidps.engine.entity.character.player.Player
 import world.gregs.voidps.engine.entity.character.player.skill.Skill
+import world.gregs.voidps.engine.entity.character.player.skill.exp.XpOrigin
 import world.gregs.voidps.engine.entity.character.player.skill.exp.exp
 import world.gregs.voidps.engine.queue.queue
 
@@ -15,7 +16,7 @@ class DesertSlayerBosses : Script {
         npcDespawn("monstrous_cave_crawler,turoth_mightiest,basilisk_boss,kurask_overlord") {
             val killer = killer as? Player ?: return@npcDespawn
             killer["killed_$id"] = true
-            killer.exp(Skill.Slayer, 1000.0)
+            killer.exp(Skill.Slayer, 1000.0, XpOrigin.COMBAT)
             killer.tele(Tables.tile("desert_dungeon_boss.$id.exit"))
             killer.queue("shift_back") {
                 killer.statement("You shift back to reality, having defeated this boss. You may now pass this barrier freely.")

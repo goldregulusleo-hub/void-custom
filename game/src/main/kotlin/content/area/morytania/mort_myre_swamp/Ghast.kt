@@ -10,6 +10,7 @@ import world.gregs.voidps.engine.entity.character.Character
 import world.gregs.voidps.engine.entity.character.mode.Retreat
 import world.gregs.voidps.engine.entity.character.player.Player
 import world.gregs.voidps.engine.entity.character.player.skill.Skill
+import world.gregs.voidps.engine.entity.character.player.skill.exp.XpOrigin
 import world.gregs.voidps.engine.entity.character.player.skill.exp.exp
 import world.gregs.voidps.engine.inv.add
 import world.gregs.voidps.engine.inv.inventory
@@ -78,7 +79,7 @@ class Ghast : Script {
             if (killer !is Player) {
                 return@npcDeath
             }
-            killer.exp(Skill.Prayer, 30.0)
+            killer.exp(Skill.Prayer, 30.0, XpOrigin.COMBAT)
             when (killer.quest("nature_spirit")) {
                 "ghast_3" -> {
                     killer.message("That's one Ghast, 2 more to kill.")
